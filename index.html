@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bracket - Designed once. Licensed forever.</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            font-family: 'Montserrat', sans-serif;
+            background: white;
+            color: #17171c;
+            overflow-x: hidden;
+            width: 100%;
+            min-width: 375px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 2560px;
+            margin: 0 auto;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        /* Grid Background - scales with viewport */
+        .grid-background {
+            position: fixed;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 0;
+            width: 100%;
+            max-width: 2560px;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 0;
+            display: none;
+        }
+
+        .grid-horizontal {
+            position: relative;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .grid-vertical {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            display: flex;
+        }
+
+        .grid-cell-v {
+            position: relative;
+            flex: 1;
+            height: 1176px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .grid-cell-v-inner {
+            flex: none;
+            transform: rotate(-90deg);
+            width: 1176px;
+        }
+
+        .grid-cell-h {
+            background: transparent;
+            height: clamp(40px, 3.889vw, 100px);
+            width: 100%;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .grid-border {
+            position: absolute;
+            border: 1px solid #17171c;
+            inset: -0.5px;
+            pointer-events: none;
+        }
+
+        /* Navbar - fully responsive */
+        .navbar {
+            position: fixed;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 0;
+            width: 100%;
+            max-width: 2560px;
+            height: clamp(60px, 6.667vw, 170px);
+            z-index: 50;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-bg {
+            position: absolute;
+            inset: 0;
+            backdrop-filter: blur(8px);
+            background: linear-gradient(180deg, rgba(68, 68, 68, 0.6) 0%, rgba(238, 238, 238, 0) 100%);
+        }
+
+        .navbar-content {
+            position: relative;
+            height: 100%;
+            padding: 0 clamp(20px, 12.639vw, 324px);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 100%;
+        }
+
+        .navbar-logo {
+            display: flex;
+            align-items: center;
+            gap: clamp(8px, 0.833vw, 21px);
+        }
+
+        .logo-icon {
+            width: clamp(32px, 3.333vw, 85px);
+            height: clamp(32px, 3.333vw, 85px);
+            background: #17171c;
+            border-radius: clamp(8px, 0.833vw, 21px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .logo-icon svg {
+            width: 65%;
+            height: auto;
+        }
+
+        .logo-text {
+            height: clamp(16px, 1.66vw, 42px);
+            width: auto;
+            flex-shrink: 0;
+        }
+
+        .navbar-link {
+            display: none;
+        }
+
+        /* Main Content - scales properly */
+        .main-content {
+            position: relative;
+            padding: clamp(80px, 10vw, 256px) clamp(20px, 12.639vw, 324px) clamp(60px, 8.333vw, 213px);
+            display: flex;
+            flex-direction: column;
+            gap: clamp(40px, 4.444vw, 114px);
+            width: 100%;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            display: flex;
+            flex-direction: column;
+            gap: clamp(20px, 1.667vw, 43px);
+            width: 100%;
+        }
+
+        .hero-content {
+            display: flex;
+            flex-direction: column;
+            gap: clamp(20px, 1.667vw, 43px);
+            width: 100%;
+        }
+
+        .hero-text {
+            display: flex;
+            flex-direction: column;
+            gap: clamp(10px, 0.833vw, 21px);
+            width: 100%;
+        }
+
+        .hero-title {
+            font-size: clamp(28px, 3.333vw, 85px);
+            font-weight: 700;
+            line-height: 1.1;
+            letter-spacing: -0.2629px;
+            word-wrap: break-word;
+            max-width: 100%;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(14px, 1.667vw, 43px);
+            font-weight: 500;
+            line-height: 1.3;
+            letter-spacing: -0.2629px;
+            word-wrap: break-word;
+            max-width: 100%;
+        }
+
+        .hero-form {
+            display: flex;
+            flex-direction: column;
+            gap: clamp(6px, 0.278vw, 7px);
+            width: 100%;
+        }
+
+        .form-row {
+            display: flex;
+            flex-direction: column;
+            gap: clamp(10px, 0.833vw, 21px);
+            width: 100%;
+        }
+
+        .email-input {
+            padding: clamp(12px, 1.111vw, 28px);
+            width: 100%;
+            border: 1px solid rgba(23, 23, 28, 0.2);
+            border-radius: clamp(6px, 0.556vw, 14px);
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(12px, 0.972vw, 25px);
+            font-weight: 400;
+            line-height: 1.2;
+            letter-spacing: -0.2629px;
+        }
+
+        .email-input::placeholder {
+            color: rgba(23, 23, 28, 0.2);
+            opacity: 1;
+        }
+
+        .cta-button {
+            padding: clamp(12px, 1.111vw, 28px) clamp(20px, 2.639vw, 68px);
+            width: 100%;
+            background: #f5b700;
+            border: none;
+            border-radius: clamp(6px, 0.556vw, 14px);
+            font-family: 'Montserrat', sans-serif;
+            font-size: clamp(12px, 0.972vw, 25px);
+            font-weight: 500;
+            line-height: 1.2;
+            letter-spacing: -0.2629px;
+            color: #17171c;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .cta-button:hover {
+            background: #dca500;
+        }
+
+        .form-disclaimer {
+            font-size: clamp(11px, 0.972vw, 25px);
+            font-weight: 400;
+            line-height: 1.5;
+            letter-spacing: -0.2629px;
+            text-transform: lowercase;
+            word-wrap: break-word;
+        }
+
+        .hero-image {
+            width: 100%;
+            height: clamp(200px, 16.667vw, 427px);
+            border-radius: clamp(12px, 1.389vw, 36px);
+            border: 1px solid black;
+            overflow: hidden;
+        }
+
+        .hero-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* How It Works Section */
+        .how-it-works {
+            display: flex;
+            flex-direction: column;
+            gap: clamp(28px, 2.5vw, 64px);
+            align-items: center;
+            width: 100%;
+        }
+
+        .how-it-works-header {
+            display: flex;
+            flex-direction: column;
+            gap: clamp(10px, 0.833vw, 21px);
+            align-items: center;
+            text-align: center;
+            width: 100%;
+        }
+
+        .how-it-works-title {
+            font-size: clamp(24px, 2.5vw, 64px);
+            font-weight: 700;
+            line-height: 1.2;
+            letter-spacing: -0.2629px;
+            word-wrap: break-word;
+        }
+
+        .how-it-works-subtitle {
+            font-size: clamp(14px, 1.389vw, 36px);
+            font-weight: 400;
+            line-height: 1.3;
+            letter-spacing: -0.2629px;
+            word-wrap: break-word;
+        }
+
+        .steps-container {
+            display: flex;
+            flex-direction: column;
+            gap: clamp(28px, 2.5vw, 64px);
+            width: 100%;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            gap: clamp(16px, 4.028vw, 103px);
+            align-items: stretch;
+            width: 100%;
+        }
+
+        .step-image {
+            width: 100%;
+            height: clamp(200px, 23.611vw, 605px);
+            border-radius: clamp(12px, 1.389vw, 36px);
+            border: 2px solid #17171c;
+            overflow: hidden;
+        }
+
+        .step-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .step-text {
+            display: flex;
+            flex-direction: column;
+            gap: clamp(4px, 0.417vw, 11px);
+            width: 100%;
+        }
+
+        .step-label {
+            font-size: clamp(14px, 1.389vw, 36px);
+            font-weight: 600;
+            line-height: 1.3;
+            letter-spacing: -0.2629px;
+            word-wrap: break-word;
+        }
+
+        .step-description {
+            font-size: clamp(14px, 1.389vw, 36px);
+            font-weight: 400;
+            line-height: 1.3;
+            letter-spacing: -0.2629px;
+            word-wrap: break-word;
+        }
+
+        /* Did You Know Section */
+        .did-you-know {
+            position: relative;
+            width: 100%;
+            min-height: clamp(160px, 13.889vw, 356px);
+            background: #f0f0eb;
+            border-radius: clamp(12px, 1.389vw, 36px);
+            border: 2px solid rgba(23, 23, 28, 0.4);
+            box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: clamp(40px, 3.333vw, 85px) clamp(20px, 1.667vw, 43px) clamp(32px, 2.778vw, 71px);
+        }
+
+        .did-you-know-content {
+            display: flex;
+            flex-direction: column;
+            gap: clamp(10px, 0.833vw, 21px);
+            align-items: center;
+            text-align: center;
+            width: 100%;
+        }
+
+        .did-you-know-title {
+            font-size: clamp(24px, 2.5vw, 64px);
+            font-weight: 700;
+            line-height: 1.2;
+            letter-spacing: -0.2719px;
+            word-wrap: break-word;
+        }
+
+        .did-you-know-text {
+            font-size: clamp(16px, 1.667vw, 43px);
+            font-weight: 600;
+            line-height: 1.3;
+            letter-spacing: -0.2629px;
+            word-wrap: break-word;
+        }
+
+        .did-you-know-dots {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: clamp(12px, 1.389vw, 36px);
+            display: flex;
+            align-items: center;
+            gap: clamp(4px, 0.417vw, 11px);
+        }
+
+        .dot {
+            width: clamp(6px, 0.556vw, 14px);
+            height: clamp(6px, 0.556vw, 14px);
+            border-radius: 50%;
+            background: rgba(23, 23, 28, 0.6);
+        }
+
+        .dot-active {
+            width: clamp(18px, 1.667vw, 43px);
+            border-radius: clamp(3px, 0.278vw, 7px);
+            background: #f5b700;
+        }
+
+        /* Footer */
+        .footer {
+            position: relative;
+            width: 100%;
+            padding: clamp(24px, 2.222vw, 57px) clamp(20px, 12.639vw, 324px);
+            border-top: 1px solid rgba(23, 23, 28, 0.3);
+            margin-top: clamp(40px, 4.444vw, 114px);
+        }
+
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: clamp(16px, 1.667vw, 43px);
+            text-align: center;
+        }
+
+        .footer-logo-section {
+            display: flex;
+            align-items: center;
+            gap: clamp(8px, 0.833vw, 21px);
+        }
+
+        .footer-logo-icon {
+            width: clamp(28px, 2.5vw, 64px);
+            height: clamp(28px, 2.5vw, 64px);
+            background: black;
+            border-radius: clamp(8px, 0.833vw, 21px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .footer-logo-icon svg {
+            width: 65%;
+            height: auto;
+        }
+
+        .footer-copyright {
+            font-size: clamp(7px, 0.633vw, 16px);
+            font-weight: 600;
+            letter-spacing: -0.4065px;
+            white-space: nowrap;
+        }
+
+        .footer-social {
+            display: flex;
+            gap: clamp(16px, 1.667vw, 43px);
+            align-items: center;
+        }
+
+        .social-icon {
+            width: clamp(24px, 2.222vw, 57px);
+            height: clamp(24px, 2.222vw, 57px);
+            flex-shrink: 0;
+        }
+
+        .social-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Tablet - 768px */
+        @media (min-width: 768px) {
+            .grid-background {
+                display: block;
+                opacity: 0.5;
+            }
+
+            .footer-content {
+                flex-direction: row;
+                justify-content: space-between;
+            }
+        }
+
+        /* Desktop - 1024px */
+        @media (min-width: 1024px) {
+            .navbar-link {
+                display: block;
+                font-size: clamp(14px, 0.972vw, 25px);
+                font-weight: 500;
+                color: #17171c;
+                text-decoration: none;
+                padding: clamp(14px, 1.111vw, 28px) clamp(20px, 1.667vw, 43px);
+                border-radius: clamp(6px, 0.556vw, 14px);
+                border: 1px solid rgba(23, 23, 28, 0.2);
+                transition: all 0.2s;
+                white-space: nowrap;
+            }
+
+            .navbar-link:hover {
+                background: rgba(23, 23, 28, 0.05);
+            }
+
+            .hero-section {
+                flex-direction: row;
+                align-items: flex-start;
+            }
+
+            .hero-content {
+                flex: 1;
+            }
+
+            .form-row {
+                flex-direction: row;
+            }
+
+            .email-input {
+                flex: 1;
+            }
+
+            .cta-button {
+                width: auto;
+            }
+
+            .hero-image {
+                width: clamp(350px, 27.778vw, 711px);
+                flex-shrink: 0;
+            }
+
+            .step {
+                flex-direction: row;
+                align-items: center;
+            }
+
+            .step-image {
+                width: clamp(420px, 34.722vw, 889px);
+                flex-shrink: 0;
+            }
+
+            .step-text {
+                flex: 1;
+            }
+
+            .step:nth-child(odd) .step-image {
+                order: 1;
+            }
+
+            .step:nth-child(odd) .step-text {
+                order: 2;
+                text-align: right;
+            }
+
+            .step:nth-child(even) .step-image {
+                order: 2;
+            }
+
+            .step:nth-child(even) .step-text {
+                order: 1;
+                text-align: left;
+            }
+
+            .grid-background {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Grid Background -->
+        <div class="grid-background">
+            <div class="grid-horizontal">
+                <div class="grid-cell-h"><div class="grid-border"></div></div>
+                <div class="grid-cell-h"><div class="grid-border"></div></div>
+                <div class="grid-cell-h"><div class="grid-border"></div></div>
+                <div class="grid-cell-h"><div class="grid-border"></div></div>
+                <div class="grid-cell-h"><div class="grid-border"></div></div>
+                <div class="grid-cell-h"><div class="grid-border"></div></div>
+                <div class="grid-cell-h"><div class="grid-border"></div></div>
+                <div class="grid-cell-h"><div class="grid-border"></div></div>
+                <div class="grid-cell-h"><div class="grid-border"></div></div>
+                <div class="grid-cell-h"><div class="grid-border"></div></div>
+                <div class="grid-cell-h"><div class="grid-border"></div></div>
+                <div class="grid-cell-h"><div class="grid-border"></div></div>
+                <div class="grid-cell-h"><div class="grid-border"></div></div>
+                <div class="grid-cell-h"><div class="grid-border"></div></div>
+                <div class="grid-cell-h"><div class="grid-border"></div></div>
+                <div class="grid-cell-h"><div class="grid-border"></div></div>
+                <div class="grid-cell-h"><div class="grid-border"></div></div>
+                <div class="grid-cell-h"><div class="grid-border"></div></div>
+                <div class="grid-cell-h"><div class="grid-border"></div></div>
+                <div class="grid-cell-h"><div class="grid-border"></div></div>
+                <div class="grid-cell-h"><div class="grid-border"></div></div>
+            </div>
+            <div class="grid-vertical">
+                <div class="grid-cell-v"><div class="grid-cell-v-inner"><div class="grid-cell-h"><div class="grid-border"></div></div></div></div>
+                <div class="grid-cell-v"><div class="grid-cell-v-inner"><div class="grid-cell-h"><div class="grid-border"></div></div></div></div>
+                <div class="grid-cell-v"><div class="grid-cell-v-inner"><div class="grid-cell-h"><div class="grid-border"></div></div></div></div>
+                <div class="grid-cell-v"><div class="grid-cell-v-inner"><div class="grid-cell-h"><div class="grid-border"></div></div></div></div>
+                <div class="grid-cell-v"><div class="grid-cell-v-inner"><div class="grid-cell-h"><div class="grid-border"></div></div></div></div>
+                <div class="grid-cell-v"><div class="grid-cell-v-inner"><div class="grid-cell-h"><div class="grid-border"></div></div></div></div>
+                <div class="grid-cell-v"><div class="grid-cell-v-inner"><div class="grid-cell-h"><div class="grid-border"></div></div></div></div>
+                <div class="grid-cell-v"><div class="grid-cell-v-inner"><div class="grid-cell-h"><div class="grid-border"></div></div></div></div>
+                <div class="grid-cell-v"><div class="grid-cell-v-inner"><div class="grid-cell-h"><div class="grid-border"></div></div></div></div>
+                <div class="grid-cell-v"><div class="grid-cell-v-inner"><div class="grid-cell-h"><div class="grid-border"></div></div></div></div>
+                <div class="grid-cell-v"><div class="grid-cell-v-inner"><div class="grid-cell-h"><div class="grid-border"></div></div></div></div>
+                <div class="grid-cell-v"><div class="grid-cell-v-inner"><div class="grid-cell-h"><div class="grid-border"></div></div></div></div>
+                <div class="grid-cell-v"><div class="grid-cell-v-inner"><div class="grid-cell-h"><div class="grid-border"></div></div></div></div>
+                <div class="grid-cell-v"><div class="grid-cell-v-inner"><div class="grid-cell-h"><div class="grid-border"></div></div></div></div>
+                <div class="grid-cell-v"><div class="grid-cell-v-inner"><div class="grid-cell-h"><div class="grid-border"></div></div></div></div>
+                <div class="grid-cell-v"><div class="grid-cell-v-inner"><div class="grid-cell-h"><div class="grid-border"></div></div></div></div>
+                <div class="grid-cell-v"><div class="grid-cell-v-inner"><div class="grid-cell-h"><div class="grid-border"></div></div></div></div>
+                <div class="grid-cell-v"><div class="grid-cell-v-inner"><div class="grid-cell-h"><div class="grid-border"></div></div></div></div>
+                <div class="grid-cell-v"><div class="grid-cell-v-inner"><div class="grid-cell-h"><div class="grid-border"></div></div></div></div>
+                <div class="grid-cell-v"><div class="grid-cell-v-inner"><div class="grid-cell-h"><div class="grid-border"></div></div></div></div>
+                <div class="grid-cell-v"><div class="grid-cell-v-inner"><div class="grid-cell-h"><div class="grid-border"></div></div></div></div>
+                <div class="grid-cell-v"><div class="grid-cell-v-inner"><div class="grid-cell-h"><div class="grid-border"></div></div></div></div>
+                <div class="grid-cell-v"><div class="grid-cell-v-inner"><div class="grid-cell-h"><div class="grid-border"></div></div></div></div>
+                <div class="grid-cell-v"><div class="grid-cell-v-inner"><div class="grid-cell-h"><div class="grid-border"></div></div></div></div>
+                <div class="grid-cell-v"><div class="grid-cell-v-inner"><div class="grid-cell-h"><div class="grid-border"></div></div></div></div>
+            </div>
+        </div>
+
+        <!-- Navbar -->
+        <div class="navbar">
+            <div class="navbar-bg"></div>
+            <div class="navbar-content">
+                <div class="navbar-logo">
+                    <div class="logo-icon">
+                        <svg viewBox="0 0 24.2493 18.1637" fill="none">
+                            <path d="M5.18097 18.1485V15.5581H2.59048V10.3771H0V7.78661H2.59048V2.60564H5.18097V0.0151608H10.3619V2.60564H7.77145V7.78661H5.18097V10.3771H7.77145V15.5581H10.3619V18.1485H5.18097Z" fill="white"/>
+                            <path d="M11.297 18.1637L11.2968 0L21.6588 0.0303225V2.6208H24.2493V7.80177H21.6588V10.3923H24.2493V15.5732H21.6588V18.1637L11.297 18.1637ZM11.2968 7.80177H19.0683V2.6208H11.2968V7.80177ZM11.2968 15.5732H19.0683V10.3923H11.2968V15.5732Z" fill="white"/>
+                        </svg>
+                    </div>
+                    <svg class="logo-text" viewBox="0 0 157.148 23.9138" fill="none">
+                        <path d="M6.83253 10.2488H10.2488V13.6651H6.83253V23.9138H0V6.83253H6.83253V10.2488ZM20.4976 6.83253V10.2488H10.2488V6.83253H20.4976Z" fill="#17171C"/>
+                        <path d="M27.3301 23.9138V20.4976H23.9138V17.0813H27.3301V13.6651H40.9952V10.2488H27.3301V6.83253H44.4114V10.2488H47.8277V23.9138H27.3301ZM30.7464 20.4976H40.9952V17.0813H30.7464V20.4976Z" fill="#17171C"/>
+                        <path d="M54.6602 23.9138V20.4976H51.244V10.2488H54.6602V6.83253H75.1578V10.2488H58.0765V20.4976H75.1578V23.9138H54.6602Z" fill="#17171C"/>
+                        <path d="M78.5741 23.9138V0H85.4066V13.6651H92.2391V10.2488H95.6554V6.83253H102.488V10.2488H99.0717V13.6651H95.6554V17.0813H99.0717V20.4976H102.488V23.9138H95.6554V20.4976H92.2391V17.0813H85.4066V23.9138H78.5741Z" fill="#17171C"/>
+                        <path d="M109.32 23.9138V20.4976H105.904V10.2488H109.32V6.83253H126.402V10.2488H129.818V17.0813H112.737V20.4976H126.402V23.9138H109.32ZM112.737 13.6651H122.986V10.2488H112.737V13.6651Z" fill="#17171C"/>
+                        <path d="M143.483 23.9138V10.2488H136.651V6.83253H143.483V0H150.316V6.83253H157.148V10.2488H150.316V23.9138H143.483Z" fill="#17171C"/>
+                    </svg>
+                </div>
+                <a href="#" class="navbar-link">LOG IN</a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Hero Section -->
+            <div class="hero-section">
+                <div class="hero-content">
+                    <div class="hero-text">
+                        <div class="hero-title">
+                            Designed once.<br>Licensed forever.
+                        </div>
+                        <p class="hero-subtitle">
+                            Designers publish complete UI systems.<br>
+                            Companies license them to ship products faster.
+                        </p>
+                    </div>
+                    <div class="hero-form">
+                        <div class="form-row">
+                            <input type="email" class="email-input" placeholder="YOUR EMAIL" id="emailInput">
+                            <button class="cta-button" onclick="joinWaitlist()">JOIN WAITLIST</button>
+                        </div>
+                        <p class="form-disclaimer">we'll email you when bracket goes live. no spam.</p>
+                    </div>
+                </div>
+                <div class="hero-image">
+                    <img src="https://images.unsplash.com/photo-1762341119237-98df67c9c3c9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx1aSUyMGRlc2lnbiUyMG1vYmlsZSUyMGFwcCUyMGludGVyZmFjZXxlbnwxfHx8fDE3NzIyNDU1OTB8MA&ixlib=rb-4.1.0&q=80&w=1080" alt="UI Design Interface">
+                </div>
+            </div>
+
+            <!-- How It Works -->
+            <div class="how-it-works">
+                <div class="how-it-works-header">
+                    <p class="how-it-works-title">How Bracket works</p>
+                    <p class="how-it-works-subtitle">Publish structured systems or license proven foundations for your product.</p>
+                </div>
+                <div class="steps-container">
+                    <!-- Step 1 -->
+                    <div class="step">
+                        <div class="step-image">
+                            <img src="https://images.unsplash.com/photo-1520982399404-d4cc203fdc5a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkZXNpZ24lMjBzeXN0ZW0lMjBjb21wb25lbnRzJTIwbGlicmFyeXxlbnwxfHx8fDE3NzIxODY1NDB8MA&ixlib=rb-4.1.0&q=80&w=1080" alt="Design System Components">
+                        </div>
+                        <div class="step-text">
+                            <p class="step-label">STEP 01:</p>
+                            <p class="step-description">Designers build complete UI systems and flows.</p>
+                        </div>
+                    </div>
+                    <!-- Step 2 -->
+                    <div class="step">
+                        <div class="step-text">
+                            <p class="step-label">STEP 02:</p>
+                            <p class="step-description">They publish their design systems on Bracket.</p>
+                        </div>
+                        <div class="step-image">
+                            <img src="https://images.unsplash.com/photo-1762330463863-a6a399beb5ba?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwdWJsaXNoaW5nJTIwY29udGVudCUyMG9ubGluZSUyMHBsYXRmb3JtfGVufDF8fHx8MTc3MjI0NTU5MXww&ixlib=rb-4.1.0&q=80&w=1080" alt="Publishing Platform">
+                        </div>
+                    </div>
+                    <!-- Step 3 -->
+                    <div class="step">
+                        <div class="step-image">
+                            <img src="https://images.unsplash.com/photo-1681505526188-b05e68c77582?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxsaWNlbnNpbmclMjBhZ3JlZW1lbnQlMjBjb250cmFjdCUyMGJ1c2luZXNzfGVufDF8fHx8MTc3MjI0NTU5MXww&ixlib=rb-4.1.0&q=80&w=1080" alt="Licensing Agreement">
+                        </div>
+                        <div class="step-text">
+                            <p class="step-label">STEP 03:</p>
+                            <p class="step-description">Companies license ready-to-use systems to build faster.</p>
+                        </div>
+                    </div>
+                    <!-- Step 4 -->
+                    <div class="step">
+                        <div class="step-text">
+                            <p class="step-label">STEP 04:</p>
+                            <p class="step-description">Designers earn every time their systems are licensed.</p>
+                        </div>
+                        <div class="step-image">
+                            <img src="https://images.unsplash.com/photo-1705234384435-e06172b6d2f9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtYXJrZXRwbGFjZSUyMG9ubGluZSUyMHN0b3JlJTIwcHJvZHVjdHN8ZW58MXx8fHwxNzcyMjQ1NTkxfDA&ixlib=rb-4.1.0&q=80&w=1080" alt="Marketplace Store">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Did You Know -->
+            <div class="did-you-know">
+                <div class="did-you-know-content">
+                    <p class="did-you-know-title">Did you know?</p>
+                    <p class="did-you-know-text">Design systems usually stay unused after one client.</p>
+                </div>
+                <div class="did-you-know-dots">
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                    <div class="dot dot-active"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div class="footer-content">
+                <div class="footer-logo-section">
+                    <div class="footer-logo-icon">
+                        <svg viewBox="0 0 24.2493 18.1637" fill="none">
+                            <path d="M5.18097 18.1485V15.5581H2.59048V10.3771H0V7.78661H2.59048V2.60564H5.18097V0.0151608H10.3619V2.60564H7.77145V7.78661H5.18097V10.3771H7.77145V15.5581H10.3619V18.1485H5.18097Z" fill="white"/>
+                            <path d="M11.297 18.1637L11.2968 0L21.6588 0.0303225V2.6208H24.2493V7.80177H21.6588V10.3923H24.2493V15.5732H21.6588V18.1637L11.297 18.1637ZM11.2968 7.80177H19.0683V2.6208H11.2968V7.80177ZM11.2968 15.5732H19.0683V10.3923H11.2968V15.5732Z" fill="white"/>
+                        </svg>
+                    </div>
+                    <p class="footer-copyright">© BRACKET</p>
+                </div>
+                <div class="footer-social">
+                    <div class="social-icon">
+                        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAAsTAAALEwEAmpwYAAAA3ElEQVR4nO3XsQ2DMBSF4f8VIVOwBSOwQkaAEdiCEViCEdhgiQ5RQIooJ4USy3lS5MZ6p7P15RghhBD+lgZowBU4AjNQui/pDdiAGZgAv/tCv/uC0N8vCP2FBaG/sCBkF2y6CY5A9w+OQAWeY8HrA8GzfyB4NACPA+B5AjxvBs+7wfNh8HwZPJ8Gz7fB8/5A8PxAEDwfEASPB4LAcSC4nQhu54LbpeB2LLidC24Xg9vV4HY5uF0Pbhek24Xpdn26XaFu16jbVep2nbpdqW5Xq9v16nbFul0xIYT/5gZMLy/RmgesRQAAAABJRU5ErkJggg==" alt="X (Twitter)">
+                    </div>
+                    <div class="social-icon">
+                        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAAsTAAALEwEAmpwYAAABG0lEQVR4nO2VO0oDURSGv0QFwU6w0MZCsBKsFOzERrAQbASxsxS0sxQrC0Hs7HwUgpWFha2dhYWVoIWFjWAQBBG/gQuXYWYyc+fKBf3h0Mw5///dc+49MzD/XYDrgHWgDtwCT8AH8Aq0gBvgElgBpkwwGzqwl7QNnAEzxvEscAqMAUdAJ8EOgV3gGJgGRoAh4M+r4BF4B+4z7gj4ApaBQeClC3wB7AL9RUCfgXWgpgO+AXZkgD5gFWgl2K1s1q+DrgM/GvwFsKwD9srVanGZGzALPCbYo/JjOXBAXA7k7RI9Aq8J9gDMABfAT0Y/BxaDwNvABVBXTnAx9mYUVQf2JL8VBN4CdqL9sFjgNvk3igC+BG6KAv4W/gHIKzo0UdsdcQAAAABJRU5ErkJggg==" alt="LinkedIn">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function joinWaitlist() {
+            const emailInput = document.getElementById('emailInput');
+            const email = emailInput.value.trim();
+            
+            if (!email) {
+                alert('Please enter your email address.');
+                return;
+            }
+            
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                alert('Please enter a valid email address.');
+                return;
+            }
+            
+            alert('Thanks for joining the waitlist! We\'ll email you when Bracket goes live.');
+            emailInput.value = '';
+        }
+        
+        document.getElementById('emailInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                joinWaitlist();
+            }
+        });
+    </script>
+</body>
+</html>
